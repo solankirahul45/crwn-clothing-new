@@ -7,23 +7,26 @@ import { rootReducer } from './root-reducer';
 
 const logger = createLogger();                                                                                                                                                                       
 
-const middleWares = [process.env.NODE_ENV === 'development' && logger].filter(
+const middleWares = [process.env.NODE_ENV != 'production' && logger].filter(
   Boolean
 );
+
 
 const persistConfig = {
   key: 'root',
   storage: {
-      getItem: (key) => Promise.resolve(localStorage.getItem(key)),
-      setItem: (key, value) => Promise.resolve(localStorage.setItem(key, value)),
-      removeItem: (key) => Promise.resolve(localStorage.removeItem(key)),
-    },
+    getItem: (key) => Promise.resolve(localStorage.getItem(key)),
+    setItem: (key, value) => Promise.resolve(localStorage.setItem(key, value)),
+    removeItem: (key) => Promise.resolve(localStorage.removeItem(key)),
+  },
   blacklist: ['user']
 }
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
-const composedEnhancers = compose(applyMiddleware(...middleWares));
+const composedEnhancer = (process.env.NODE_ENV !== 'production' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || compose;
+
+const composedEnhancers = composedEnhancer(applyMiddleware(...middleWares));
 
 export const store = createStore(persistedReducer, undefined, composedEnhancers);
 
