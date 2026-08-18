@@ -8,7 +8,7 @@ import { rootReducer } from './root-reducer';
 
 const logger = createLogger();                                                                                                                                                                       
 
-const middleWares = [process.env.NODE_ENV != 'production' && logger].filter(
+const middleWares = [import.meta.env.MODE !== 'production' && logger].filter(
   Boolean
 );
 
